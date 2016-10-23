@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 27.Tem.2014 21:21:57 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.eko.nerdeneyenir.model.Restaurant" table="restaurant" catalog="nerdeneyenir">
+        
+        <cache usage="read-write"/>
+        
+        <id name="restaurantId" type="java.lang.Integer">
+            <column name="restaurantid" />
+            <generator class="identity" />
+        </id>
+        
+        <property name="name" type="string">
+            <column name="name" length="100" not-null="true" />
+        </property>	
+        	
+		<property name="restaurantActive" type="boolean">
+			<column name="isrestaurantactive" length="1" />
+		</property>      
+		
+        <property name="insertDate" type="timestamp">
+            <column name="insertdate" length="19" not-null="true" />
+        </property>
+        
+        <property name="updateDate" type="timestamp">
+            <column name="updatedate" length="19" not-null="true" />
+        </property>
+		
+		<bag name="foods" order-by="foodName asc" table="food">
+			<key column="restaurantid" />
+			<one-to-many class="com.eko.nerdeneyenir.model.Food" />
+		</bag>
+    	
+    	<many-to-one name="restaurantAddress" class="com.eko.nerdeneyenir.model.RestaurantAddress" not-null="true" cascade="all">
+    		<column name="addressid" />
+    	</many-to-one>
+		
+    </class>
+</hibernate-mapping>

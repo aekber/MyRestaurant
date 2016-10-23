@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 27.Tem.2014 21:21:57 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.eko.nerdeneyenir.model.Food" table="food" catalog="nerdeneyenir">
+        
+        <cache usage="read-write"/>
+        
+        <id name="foodId" type="java.lang.Integer">
+            <column name="foodid" />
+            <generator class="identity" />
+        </id>       
+        
+        <property name="foodName" type="string">
+            <column name="foodname" length="100" />
+        </property>
+		
+		<property name="comment" type="string">
+			<column name="comment" length="65535" />
+		</property>
+		
+		<property name="foodActive" type="boolean">
+			<column name="isfoodactive" length="1" />
+		</property>
+		
+        <property name="popularity" type="java.lang.Integer">
+            <column name="popularity" />
+        </property>
+		
+        <property name="insertDate" type="timestamp">
+            <column name="insertdate" length="19" />
+        </property>
+        
+        <property name="updateDate" type="timestamp">
+            <column name="updatedate" length="19" />
+        </property>
+        
+		<many-to-one name="restaurant" class="com.eko.nerdeneyenir.model.Restaurant" not-null="true">
+			<column name="restaurantid" />
+		</many-to-one>
+		
+		<many-to-one name="foodCategory" class="com.eko.nerdeneyenir.model.FoodCategory" not-null="true" >
+			<column name="categoryid" />
+		</many-to-one>
+		
+		<bag name="foodImages" order-by="insertDate asc" table="foodimage">
+			<key column="foodid" />
+			<one-to-many class="com.eko.nerdeneyenir.model.FoodImage" />
+		</bag>
+		
+		<bag name="popularityList" table="foodpopularity">
+			<key column="foodid" />
+			<one-to-many class="com.eko.nerdeneyenir.model.FoodPopularity" />
+		</bag>
+		
+    </class>
+</hibernate-mapping>

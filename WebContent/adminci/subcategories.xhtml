@@ -1,0 +1,236 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:eko="http://www.javalog.net/jsf/util"
+	xmlns:pretty="http://ocpsoft.com/prettyfaces">
+
+<ui:composition template="../WEB-INF/admin/atemplate.xhtml">
+
+	<ui:define name="title">Yemek Kategorileri</ui:define>
+
+	<ui:define name="scripts">
+
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/jquery-1.7.min.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/jquery-ui-1.8.16.custom.min.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/jquery.cookie.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/jquery.alerts.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/jquery.uniform.min.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/jquery.validate.min.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/jquery.tagsinput.min.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/charCount.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/ui.spinner.min.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/chosen.jquery.min.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/custom/forms.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/custom/general.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/custom/blog.js"></script>
+
+	</ui:define>
+
+	<ui:define name="leftmenu">
+
+		<div class="vernav">
+			<ul>
+				<li><a
+					href="#{request.contextPath}/faces/zekber/javalog/administration/manageblog/newpost/">Yemekler</a></li>
+				<li><a
+					href="#{request.contextPath}/faces/zekber/javalog/administration/manageblog/categories/">Yemek
+						Resimleri</a></li>
+				<li><a
+					href="#{request.contextPath}/faces/zekber/javalog/administration/manageblog/articles/">Restaurantlar</a></li>
+				<li class="current"><a
+					href="#{request.contextPath}/faces/zekber/javalog/administration/manageblog/subcategories/"
+					class="editor">Yemek Kategorileri</a></li>
+			</ul>
+			<a class="togglemenu"></a>
+		</div>
+		<!--leftmenu-->
+
+	</ui:define>
+
+	<ui:define name="content">
+
+		<div class="contentwrapper" id="contentwrapper">
+			<div class="contenttitle">
+				<h4>Yemek Kategorileri</h4>
+			</div>
+			<!--contenttitle-->
+
+			<h:form id="frm_table">
+
+				<rich:dataTable value="#{foodBean.allFoodCategories}"
+					var="subcategory" iterationStatusVar="it" id="cat_table" rows="15"
+					styleClass="stdtable blogtable" >
+					<f:facet name="noData">
+		                Kayıt Bulunamadı !
+		            </f:facet>
+					<rich:column>
+						<f:facet name="header">Sıra</f:facet>
+						<h:outputText styleClass="con0" value="#{it.index+1}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">Yemek ID</f:facet>
+						<h:outputText styleClass="con0"
+							value="#{subcategory.foodCategoryId}" />
+					</rich:column>
+					<rich:column filterType="custom"
+						filterExpression="#{fn:containsIgnoreCase(subcategory.name, foodBean.foodCategoryFilter)}"
+						filterValue="#{foodBean.foodCategoryFilter}">
+						<f:facet name="header">
+							<h:panelGroup>
+								<h:inputText value="#{foodBean.foodCategoryFilter}" >
+									<rich:placeholder value="Yemek Adı..."></rich:placeholder>
+									<a4j:ajax event="blur" render="cat_table" execute="@this" />
+								</h:inputText>
+							</h:panelGroup>
+						</f:facet>
+						<h:outputText styleClass="con0" value="#{subcategory.name}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">Yemek Sayısı</f:facet>
+						<h:outputText styleClass="con1"
+							value="#{fn:length(subcategory.foodList)}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">Sil/Düzenle</f:facet>
+						<a4j:commandLink execute="@this" render="@none" value="Sil | "
+							oncomplete="if(#{subcategory.foodList.size() > 0}){ #{rich:component('stopPane')}.show();} else{ #{rich:component('confirmPane')}.show();}">
+							<f:setPropertyActionListener target="#{foodBean.editedFoodCat}"
+								value="#{subcategory}" />
+						</a4j:commandLink>
+						<a4j:commandLink render="basicform" value="Düzenle"
+							execute="@this" oncomplete="#{rich:component('editPane')}.show()">
+							<f:setPropertyActionListener target="#{foodBean.editedFoodCat}"
+								value="#{subcategory}" />
+						</a4j:commandLink>
+					</rich:column>
+
+					<f:facet name="footer">
+						<rich:dataScroller page="#{foodBean.page}" />
+					</f:facet>
+
+				</rich:dataTable>
+
+				<a4j:jsFunction name="remove"
+					action="#{foodBean.deleteFoodCategory()}" render="cat_table"
+					execute="@this"
+					oncomplete="#{rich:component('confirmPane')}.hide();" />
+
+				<rich:popupPanel id="statPane" autosized="true">
+					<h:graphicImage
+						value="#{requestScope.contextPath}/resources/images/ajax-loader.gif"
+						alt="ai" />
+			            Please wait...
+			        </rich:popupPanel>
+
+				<rich:popupPanel id="confirmPane" autosized="true">
+			            Silmek istediğinize emin misiniz? 
+			            <a4j:commandButton value="Sil"
+						onclick="remove(); return false;" />
+					<a4j:commandButton value="İptal"
+						onclick="#{rich:component('confirmPane')}.hide(); return false;" />
+				</rich:popupPanel>
+
+				<rich:popupPanel id="stopPane" autosized="true">
+			            Bu kategoriye bağlı yemekler oldugundan silinemez ! 
+			            <a4j:commandButton value="Tamam"
+						onclick="#{rich:component('stopPane')}.hide(); return false;" />
+				</rich:popupPanel>
+
+				<rich:popupPanel header="Düzenle" moveable="true" id="editPane"
+					domElementAttachment="parent" width="300" height="230">
+
+					<a4j:outputPanel id="basicform" layout="block"
+						styleClass="subcontent">
+
+						<div class="contenttitle2">
+							<h3>Yemek Kategorisi Düzenle</h3>
+						</div>
+						<!--contenttitle-->
+
+						<p>
+							<label>Kategori Adı</label> <span class="field"> <h:inputText
+									id="catval" value="#{foodBean.editedFoodCat.name}"
+									styleClass="smallinput" />
+							</span>
+						</p>
+
+					</a4j:outputPanel>
+					<!--subcontent-->
+
+					<a4j:commandButton value="Kaydet"
+						action="#{foodBean.updateFoodCategory()}" render="cat_table"
+						execute="editPane"
+						oncomplete="if (#{facesContext.maximumSeverity==null}) {#{rich:component('editPane')}.hide();}" />
+					<a4j:commandButton value="İptal" style="margin-left:10px;"
+						onclick="#{rich:component('editPane')}.hide(); return false;" />
+
+				</rich:popupPanel>
+
+			</h:form>
+
+			<a4j:outputPanel id="basicform" layout="block"
+				styleClass="subcontent">
+
+				<div class="contenttitle2">
+					<h3>Yemek Kategorisi Ekle</h3>
+				</div>
+				<!--contenttitle-->
+
+				<h:form id="createCategory" styleClass="stdform">
+
+					<p>
+						<label>Kategori Adı</label> <span class="field"> <h:inputText
+								id="catval215" value="#{foodBean.newFoodCat.name}"
+								styleClass="smallinput">
+								<a4j:ajax execute="@this" event="blur" render="article_message"
+									listener="#{foodBean.checkNewCategoryName}" />
+							</h:inputText> <h:outputText id="article_message"
+								value="#{foodBean.categoryMessage}"
+								style="margin-left:20px;color:red;font-weight: bold;" />
+						</span>
+					</p>
+
+
+					<p class="stdformbutton">
+						<h:commandButton id="btn_create" value="Create"
+							action="#{foodBean.insertFoodCategory()}"
+							styleClass="submit radius2">
+							<f:ajax render=":frm_table:cat_table createCategory"
+								execute="@form" />
+						</h:commandButton>
+					</p>
+				</h:form>
+
+				<br />
+
+			</a4j:outputPanel>
+			<!--subcontent-->
+
+		</div>
+		<!-- contentwrapper -->
+
+	</ui:define>
+
+</ui:composition>
+
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:pretty="http://ocpsoft.com/prettyfaces">
+
+<ui:composition template="../WEB-INF/admin/atemplate.xhtml">
+
+	<ui:define name="title">Yemekler</ui:define>
+
+	<ui:define name="scripts">
+
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/jquery-1.7.min.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/jquery-ui-1.8.16.custom.min.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/jquery.cookie.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/jquery.alerts.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/jquery.uniform.min.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/jquery.validate.min.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/jquery.tagsinput.min.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/charCount.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/ui.spinner.min.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/chosen.jquery.min.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/custom/forms.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/custom/general.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/custom/blog.js"></script>
+
+	</ui:define>
+
+	<ui:define name="leftmenu">
+
+		<div class="vernav">
+			<ul>
+				<li class="current"><a
+					href="#{request.contextPath}/faces/zekber/javalog/administration/manageblog/newpost/"
+					class="editor">Yemekler</a></li>
+				<li><a
+					href="#{request.contextPath}/faces/zekber/javalog/administration/manageblog/categories/">Yemek
+						Resimleri</a></li>
+				<li><a
+					href="#{request.contextPath}/faces/zekber/javalog/administration/manageblog/articles/">Restaurantlar</a></li>
+				<li><a
+					href="#{request.contextPath}/faces/zekber/javalog/administration/manageblog/subcategories/">Yemek
+						Kategorileri</a></li>
+			</ul>
+			<a class="togglemenu"></a>
+		</div>
+		<!--leftmenu-->
+
+	</ui:define>
+
+	<ui:define name="content">
+
+		<div class="contentwrapper" id="contentwrapper">
+			<div class="contenttitle">
+				<h4>Yemekler</h4>
+			</div>
+			<!--contenttitle-->
+
+			<h:form id="dt_form" prependId="false">
+
+				<rich:dataTable value="#{foodBean.allFoods}" var="article"
+					iterationStatusVar="it" id="art_table" rows="10"
+					styleClass="stdtable blogtable">
+					<f:facet name="noData">
+		                Kayıt Bulunamadı !
+		            </f:facet>
+					<rich:column>
+						<f:facet name="header">Sıra</f:facet>
+						<h:outputText styleClass="con0" value="#{it.index+1}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">Yemek Aktif?</f:facet>
+						<h:selectBooleanCheckbox value="#{article.foodActive}">
+							<f:ajax execute="@this" render="art_table" event="click"
+								listener="#{foodBean.foodActivenessListener}" />
+						</h:selectBooleanCheckbox>
+					</rich:column>
+
+					<rich:column filterType="custom"
+						filterExpression="#{fn:containsIgnoreCase(article.restaurant.name, foodBean.foodRestaurantFilter)}"
+						filterValue="#{foodBean.foodRestaurantFilter}">
+						<f:facet name="header">
+							<h:panelGroup>
+								<h:inputText value="#{foodBean.foodRestaurantFilter}">
+									<rich:placeholder value="Restaurant"></rich:placeholder>
+									<a4j:ajax event="blur" render="art_table" execute="@this" />
+								</h:inputText>
+							</h:panelGroup>
+						</f:facet>
+						<h:outputText styleClass="con0" value="#{article.restaurant.name}" />
+					</rich:column>
+
+					<rich:column>
+						<f:facet name="header">Yemek Kategorisi</f:facet>
+						<h:outputText styleClass="con1"
+							value="#{article.foodCategory.name}" />
+					</rich:column>
+					<rich:column filterType="custom"
+						filterExpression="#{fn:containsIgnoreCase(article.foodName, foodBean.foodFilter)}"
+						filterValue="#{foodBean.foodFilter}">
+						<f:facet name="header">
+							<h:panelGroup>
+								<h:inputText value="#{foodBean.foodFilter}">
+									<rich:placeholder value="Yemek"></rich:placeholder>
+									<a4j:ajax event="blur" render="art_table" execute="@this" />
+								</h:inputText>
+							</h:panelGroup>
+						</f:facet>
+						<h:outputText styleClass="con0" value="#{article.foodName}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">Yemek İle İlgili Görüşler</f:facet>
+						<h:outputText styleClass="con1" value="#{article.comment}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">Resimler</f:facet>
+						<h:outputText styleClass="con0"
+							value="#{article.foodImages.size()}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">Puanlama</f:facet>
+						<h:outputText styleClass="con1" value="#{article.popularity}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">Eklenme Tarihi</f:facet>
+						<h:outputText styleClass="con0" value="#{article.insertDate}">
+							<f:convertDateTime dateStyle="medium" timeZone="Turkey"
+								type="both" />
+						</h:outputText>
+					</rich:column>
+
+					<rich:column>
+						<f:facet name="header">Düzenle</f:facet>
+						<a4j:commandLink render="basicform" execute="@this"
+							oncomplete="#{rich:component('editPane')}.show()" value="Düzenle">
+							<f:setPropertyActionListener target="#{foodBean.editedFood}"
+								value="#{article}" />
+						</a4j:commandLink>
+					</rich:column>
+
+					<!--  -->
+					<f:facet name="footer">
+						<rich:dataScroller page="#{foodBean.page}" />
+					</f:facet>
+				</rich:dataTable>
+
+				<rich:popupPanel header="Düzenle" id="editPane" moveable="true"
+					domElementAttachment="parent" width="500" height="590">
+
+					<h:panelGroup id="basicform" layout="block" styleClass="subcontent">
+
+						<div class="contenttitle2">
+							<h3>Yemek Bilgileri</h3>
+						</div>
+						<!--contenttitle-->
+
+
+						<p>
+							<label>Restaurant Adı</label> <span class="field"> <h:selectOneMenu
+									id="categ213" value="#{foodBean.editedFood.restaurant.name}">
+									<f:selectItems value="#{foodBean.thirdList}" />
+								</h:selectOneMenu>
+							</span>
+						</p>
+
+						<p>
+							<label>Yemek Kategorisi</label> <span class="field"> <h:selectOneMenu
+									id="categ23" value="#{foodBean.editedFood.foodCategory.name}">
+									<f:selectItems value="#{foodBean.firstList}" />
+								</h:selectOneMenu>
+							</span>
+						</p>
+
+						<p>
+							<label>Yemek Adı</label> <span class="field"> <h:inputText
+									id="catval23" value="#{foodBean.editedFood.foodName}"
+									styleClass="smallinput" />
+							</span>
+						</p>
+
+						<p>
+							<label>Yorumlar</label> <span class="field"> <h:inputTextarea
+									id="catval25" value="#{foodBean.editedFood.comment}"
+									styleClass="smallinput" rows="10" cols="50" />
+							</span>
+						</p>
+
+						<p>
+							<label>Puanı</label> <span class="field"> <h:selectOneMenu
+									id="categ513" value="#{foodBean.editedFood.popularity}">
+									<f:selectItem itemValue="1" itemLabel="1" />
+									<f:selectItem itemValue="2" itemLabel="2" />
+									<f:selectItem itemValue="3" itemLabel="3" />
+									<f:selectItem itemValue="4" itemLabel="4" />
+									<f:selectItem itemValue="5" itemLabel="5" />
+									<f:selectItem itemValue="6" itemLabel="6" />
+									<f:selectItem itemValue="7" itemLabel="7" />
+									<f:selectItem itemValue="8" itemLabel="8" />
+									<f:selectItem itemValue="9" itemLabel="9" />
+									<f:selectItem itemValue="10" itemLabel="10" />
+								</h:selectOneMenu>
+							</span>
+						</p>
+
+						<br />
+
+						<p class="stdformbutton">
+							<a4j:commandButton value="Güncelle"
+								action="#{foodBean.updateFood}" render="art_table,editPane"
+								execute="basicform"
+								oncomplete="alert('Güncellendi !');if (#{facesContext.maximumSeverity==null}) {#{rich:component('editPane')}.hide();}" />
+							<a4j:commandButton value="İptal" style="margin-left:10px;"
+								onclick="#{rich:component('editPane')}.hide(); return false;" />
+						</p>
+
+
+					</h:panelGroup>
+
+				</rich:popupPanel>
+
+				<!--  -->
+			</h:form>
+
+
+			<br />
+
+
+			<h:panelGroup id="basicform2" layout="block" styleClass="subcontent">
+
+				<div class="contenttitle2">
+					<h3>Yemek Ekle</h3>
+				</div>
+				<!--contenttitle-->
+
+				<h:form id="editPost2" styleClass="stdform" prependId="false">
+					<p>
+						<label>Restaurant Adı</label> <span class="field"> <h:selectOneMenu
+								id="categ93" value="#{foodBean.newFood.restaurant.name}">
+								<f:selectItems value="#{foodBean.thirdList}" />
+							</h:selectOneMenu>
+						</span>
+					</p>
+
+					<p>
+						<label>Yemek Kategorisi</label> <span class="field"> <h:selectOneMenu
+								id="categ83" value="#{foodBean.newFood.foodCategory.name}">
+								<f:selectItems value="#{foodBean.firstList}" />
+							</h:selectOneMenu>
+						</span>
+					</p>
+
+					<p>
+						<label>Yemek Adı</label> <span class="field"> <h:inputText
+								id="catval15" value="#{foodBean.newFood.foodName}"
+								styleClass="smallinput" />
+						</span>
+					</p>
+
+					<p>
+						<label>Yorumlar</label> <span class="field"> <h:inputTextarea
+								id="catval5" value="#{foodBean.newFood.comment}"
+								styleClass="smallinput" rows="10" cols="50" />
+						</span>
+					</p>
+
+
+					<br />
+
+					<p class="stdformbutton">
+						<h:commandButton id="btn_insert5" value="Ekle"
+							action="#{foodBean.insertFood()}" styleClass="submit radius2">
+							<a4j:ajax execute="@form" render="dt_form:art_table,editPost2"
+								oncomplete="alert('Yemek Eklendi !');return false;" />
+						</h:commandButton>
+					</p>
+
+				</h:form>
+
+			</h:panelGroup>
+
+		</div>
+		<!-- contentwrapper -->
+	</ui:define>
+</ui:composition>
+
+</html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pretty="http://ocpsoft.com/prettyfaces">
+
+<ui:composition template="../WEB-INF/admin/atemplate.xhtml">
+
+	<ui:define name="title">Restaurantlar</ui:define>
+
+	<ui:define name="scripts">
+
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/jquery-1.7.min.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/jquery-ui-1.8.16.custom.min.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/jquery.cookie.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/jquery.alerts.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/jquery.uniform.min.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/jquery.validate.min.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/jquery.tagsinput.min.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/charCount.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/ui.spinner.min.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/plugins/chosen.jquery.min.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/custom/forms.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/custom/general.js"></script>
+		<script type="text/javascript"
+			src="#{request.contextPath}/adminci/js/custom/blog.js"></script>
+
+	</ui:define>
+
+	<ui:define name="leftmenu">
+
+		<div class="vernav">
+			<ul>
+				<li><a
+					href="#{request.contextPath}/faces/zekber/javalog/administration/manageblog/newpost/">Yemekler</a></li>
+				<li><a
+					href="#{request.contextPath}/faces/zekber/javalog/administration/manageblog/categories/">Yemek
+						Resimleri</a></li>
+				<li class="current"><a
+					href="#{request.contextPath}/faces/zekber/javalog/administration/manageblog/articles/"
+					class="editor">Restaurantlar</a></li>
+				<li><a
+					href="#{request.contextPath}/faces/zekber/javalog/administration/manageblog/subcategories/">Yemek
+						Kategorileri</a></li>
+			</ul>
+			<a class="togglemenu"></a>
+		</div>
+		<!--leftmenu-->
+
+	</ui:define>
+
+	<ui:define name="content">
+
+		<div class="contentwrapper" id="contentwrapper">
+			<div class="contenttitle">
+				<h4>Restaurantlar</h4>
+			</div>
+			<!--contenttitle-->
+
+			<h:form id="dt_form" prependId="false">
+
+				<rich:dataTable value="#{foodBean.allRestaurants.setToList}"
+					var="article" iterationStatusVar="it" id="art_table" rows="15"
+					styleClass="stdtable blogtable">
+
+					<f:facet name="noData">
+		                Kayıt Bulunamadı !
+		            </f:facet>
+
+					<rich:column>
+						<f:facet name="header">Sıra</f:facet>
+						<h:outputText styleClass="con0" value="#{it.index+1}" />
+					</rich:column>
+
+					<rich:column>
+						<f:facet name="header">Restaurant Aktif?</f:facet>
+						<h:selectBooleanCheckbox value="#{article.restaurantActive}">
+							<f:ajax execute="@this" render="art_table" event="click"
+								listener="#{foodBean.restaurantActivenessListener}" />
+						</h:selectBooleanCheckbox>
+					</rich:column>
+
+					<rich:column filterType="custom"
+						filterExpression="#{fn:containsIgnoreCase(article.name, foodBean.restaurantFilter)}"
+						filterValue="#{foodBean.restaurantFilter}">
+						<f:facet name="header">
+							<h:panelGroup>
+								<h:inputText value="#{foodBean.restaurantFilter}">
+									<rich:placeholder value="Restaurant Adı..."></rich:placeholder>
+									<a4j:ajax event="blur" render="art_table" execute="@this" />
+								</h:inputText>
+							</h:panelGroup>
+						</f:facet>
+						<h:outputText styleClass="con0" value="#{article.name}" />
+					</rich:column>
+
+					<rich:column>
+						<f:facet name="header">Sistemdeki Yemek Sayısı</f:facet>
+						<h:outputText styleClass="con0" value="#{article.foods.size()}" />
+					</rich:column>
+
+					<rich:column>
+						<f:facet name="header">Restaurant Adresi</f:facet>
+						<h:outputText styleClass="con1"
+							value="#{article.restaurantAddress.address}" />
+					</rich:column>
+
+					<rich:column filterType="custom"
+						filterExpression="#{fn:containsIgnoreCase(article.restaurantAddress.province, foodBean.restaurantCityFilter)}"
+						filterValue="#{foodBean.restaurantCityFilter}">
+						<f:facet name="header">
+							<h:panelGroup>
+								<h:inputText value="#{foodBean.restaurantCityFilter}">
+									<rich:placeholder value="Restaurant İli..."></rich:placeholder>
+									<a4j:ajax event="blur" render="art_table" execute="@this" />
+								</h:inputText>
+							</h:panelGroup>
+						</f:facet>
+						<h:outputText styleClass="con0"
+							value="#{article.restaurantAddress.province}" />
+					</rich:column>
+
+					<rich:column>
+						<f:facet name="header">Restaurant Telefonu</f:facet>
+						<h:outputText styleClass="con0"
+							value="#{article.restaurantAddress.phone}" />
+					</rich:column>
+
+					<rich:column>
+						<f:facet name="header">Restaurant Websitesi</f:facet>
+						<h:outputText styleClass="con0"
+							value="#{article.restaurantAddress.website}" />
+					</rich:column>
+
+					<rich:column styleClass="actions aligncenter">
+						<f:facet name="header">Düzenle</f:facet>
+						<a4j:commandLink render="basicform" value="Düzenle"
+							execute="@this" oncomplete="#{rich:component('editPane')}.show()">
+							<f:setPropertyActionListener
+								target="#{foodBean.editedRestaurant}" value="#{article}" />
+						</a4j:commandLink>
+					</rich:column>
+
+					<f:facet name="footer">
+						<rich:dataScroller page="#{foodBean.page}" />
+					</f:facet>
+
+				</rich:dataTable>
+
+				<rich:popupPanel header="Düzenle" id="editPane" moveable="true"
+					domElementAttachment="parent" width="500" height="600">
+
+					<h:panelGroup id="basicform" layout="block" styleClass="subcontent">
+
+						<div class="contenttitle2">
+							<h3>Restaurant Bilgileri</h3>
+						</div>
+						<!--contenttitle-->
+
+
+						<p>
+							<label>Restaurant Adı</label> <span class="field"> <h:inputText
+									id="catval523" value="#{foodBean.editedRestaurant.name}"
+									styleClass="smallinput" />
+							</span>
+						</p>
+
+						<p>
+							<label>Restaurant Adresi</label> <span class="field"> <h:inputText
+									id="catval423"
+									value="#{foodBean.editedRestaurant.restaurantAddress.address}"
+									styleClass="smallinput" />
+							</span>
+						</p>
+
+						<p>
+							<label>Restaurant İli</label> <span class="field"> <h:inputText
+									id="catval323"
+									value="#{foodBean.editedRestaurant.restaurantAddress.province}"
+									styleClass="smallinput" />
+							</span>
+						</p>
+
+						<p>
+							<label>Restaurant Telefonu</label> <span class="field"> <h:inputText
+									id="catval223"
+									value="#{foodBean.editedRestaurant.restaurantAddress.phone}"
+									styleClass="smallinput" />
+							</span>
+						</p>
+
+						<p>
+							<label>Restaurant Websitesi</label> <span class="field"> <h:inputText
+									id="catval123"
+									value="#{foodBean.editedRestaurant.restaurantAddress.website}"
+									styleClass="smallinput" />
+							</span>
+						</p>
+
+						<p>
+							<label>Restaurant Enlem</label> <span class="field"> <h:inputText
+									id="catval84"
+									value="#{foodBean.editedRestaurant.restaurantAddress.latitude}"
+									styleClass="smallinput" />
+							</span>
+						</p>
+
+						<p>
+							<label>Restaurant Boylam</label> <span class="field"> <h:inputText
+									id="catval74"
+									value="#{foodBean.editedRestaurant.restaurantAddress.longitude}"
+									styleClass="smallinput" />
+							</span>
+						</p>
+
+						<br />
+
+						<p class="stdformbutton">
+							<a4j:commandButton value="Güncelle"
+								action="#{foodBean.updateRestaurant}"
+								render="art_table,editPane" execute="basicform"
+								oncomplete="alert('Güncellendi !');if (#{facesContext.maximumSeverity==null}) {#{rich:component('editPane')}.hide();}" />
+							<a4j:commandButton value="İptal" style="margin-left:10px;"
+								onclick="#{rich:component('editPane')}.hide(); return false;" />
+						</p>
+
+
+					</h:panelGroup>
+
+				</rich:popupPanel>
+
+				<!--  -->
+			</h:form>
+
+			<br />
+
+			<h:panelGroup id="basicform2" layout="block" styleClass="subcontent">
+
+				<div class="contenttitle2">
+					<h3>Restaurant Ekle</h3>
+				</div>
+				<!--contenttitle-->
+
+				<h:form id="editPost2" styleClass="stdform" prependId="false">
+
+					<p>
+						<label>Restaurant Adı</label> <span class="field"> <h:inputText
+								id="catval524" value="#{foodBean.newRestaurant.name}"
+								styleClass="smallinput" />
+						</span>
+					</p>
+
+					<p>
+						<label>Restaurant Adresi</label> <span class="field"> <h:inputText
+								id="catval623"
+								value="#{foodBean.newRestaurant.restaurantAddress.address}"
+								styleClass="smallinput" />
+						</span>
+					</p>
+
+					<p>
+						<label>Restaurant İli</label> <span class="field"> <h:inputText
+								id="catval723"
+								value="#{foodBean.newRestaurant.restaurantAddress.province}"
+								styleClass="smallinput" />
+						</span>
+					</p>
+
+					<p>
+						<label>Restaurant Telefonu</label> <span class="field"> <h:inputText
+								id="catval823"
+								value="#{foodBean.newRestaurant.restaurantAddress.phone}"
+								styleClass="smallinput" />
+						</span>
+					</p>
+
+					<p>
+						<label>Restaurant Websitesi</label> <span class="field"> <h:inputText
+								id="catval923"
+								value="#{foodBean.newRestaurant.restaurantAddress.website}"
+								styleClass="smallinput" />
+						</span>
+					</p>
+
+					<p>
+						<label>Restaurant Enlem</label> <span class="field"> <h:inputText
+								id="catval94"
+								value="#{foodBean.newRestaurant.restaurantAddress.latitude}"
+								styleClass="smallinput" />
+						</span>
+					</p>
+
+					<p>
+						<label>Restaurant Boylam</label> <span class="field"> <h:inputText
+								id="catval925"
+								value="#{foodBean.newRestaurant.restaurantAddress.longitude}"
+								styleClass="smallinput" />
+						</span>
+					</p>
+
+
+					<br />
+
+					<p class="stdformbutton">
+						<h:commandButton id="btn_insert2" value="Ekle"
+							action="#{foodBean.insertRestaurant()}"
+							styleClass="submit radius2">
+							<a4j:ajax execute="@form" render="art_table,editPost2"
+								oncomplete="alert('Restaurant Eklendi !');return false;" />
+						</h:commandButton>
+					</p>
+
+				</h:form>
+
+			</h:panelGroup>
+
+		</div>
+		<!-- contentwrapper -->
+
+	</ui:define>
+
+</ui:composition>
+
+</html>

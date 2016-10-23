@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 27.Tem.2014 21:21:57 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.eko.nerdeneyenir.model.FoodImage" table="foodimage" catalog="nerdeneyenir">
+        
+        <cache usage="read-write"/>
+        
+        <id name="foodImageId" type="java.lang.Integer">
+            <column name="foodimageid" />
+            <generator class="identity" />
+        </id>       
+        
+        <property name="foodImage" type="string">
+            <column name="image" length="100" />
+        </property>
+		
+        <property name="insertDate" type="timestamp">
+            <column name="insertdate" length="19" />
+        </property>
+		
+		<many-to-one name="food" class="com.eko.nerdeneyenir.model.Food" not-null="true">
+			<column name="foodid" />
+		</many-to-one>
+    </class>
+</hibernate-mapping>

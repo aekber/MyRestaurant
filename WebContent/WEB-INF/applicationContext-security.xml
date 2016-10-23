@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sec="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="
+	    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd   
+	    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd   
+	    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd   
+	    http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.0.xsd   
+	    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
+	    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+	<context:component-scan base-package="com.eko.nerdeneyenir.restful" />
+
+	<sec:authentication-manager>
+		<sec:authentication-provider>
+			<sec:user-service id="userService">
+				<sec:user name="admin" password="Eko03021." authorities="admin" />
+				<!-- <sec:user name="johndoe" password="password" authorities="customer, admin" /> -->
+			</sec:user-service>
+		</sec:authentication-provider>
+	</sec:authentication-manager>
+
+	<sec:http create-session="stateless" use-expressions="true" realm="Restricted Area">
+		<!-- <sec:intercept-url pattern="/services/timeoftheday/asplaintext/**" access="permitAll" /> -->
+		<!-- <sec:intercept-url pattern="/services/timeoftheday/asjson/**" access="hasAnyRole('admin','customer')" /> -->
+		<sec:intercept-url pattern="/rest/foods/**" access="hasRole('admin')" />
+		<sec:intercept-url pattern="/rest/restaurants/**" access="hasRole('admin')" />
+		<sec:intercept-url pattern="/rest/citycategory/**" access="hasRole('admin')" />
+		<sec:intercept-url pattern="/rest/categories**" access="hasRole('admin')" />
+		<sec:intercept-url pattern="/rest/popularity/**" access="hasRole('admin')" />
+		<sec:http-basic />
+	</sec:http>
+
+</beans>

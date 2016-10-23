@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 27.Tem.2014 21:21:57 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.eko.nerdeneyenir.model.Food" table="food" catalog="nerdeneyenir">
+        <id name="foodId" type="java.lang.Integer">
+            <column name="foodid" />
+            <generator class="identity" />
+        </id>
+        <property name="categoryId" type="java.lang.Integer">
+            <column name="categoryid" />
+        </property>
+        <property name="restaurantId" type="java.lang.Integer">
+            <column name="restaurantid" />
+        </property>
+        <property name="foodName" type="string">
+            <column name="foodname" length="100" />
+        </property>
+        <property name="insertDate" type="timestamp">
+            <column name="insertdate" length="19" not-null="true" />
+        </property>
+        <property name="updateDate" type="timestamp">
+            <column name="updatedate" length="19" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>

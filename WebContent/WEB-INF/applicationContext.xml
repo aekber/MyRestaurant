@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" 
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:ehcache="http://www.springmodules.org/schema/ehcache"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/tx 
+           http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-2.5.xsd        
+           http://www.springframework.org/schema/aop 
+           http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+           http://www.springframework.org/schema/jee
+           http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+		   http://www.springmodules.org/schema/ehcache 
+		   http://www.springmodules.org/schema/cache/springmodules-ehcache.xsd
+		   http://www.springframework.org/schema/security 
+		   http://www.springframework.org/schema/security/spring-security-3.0.xsd
+           http://www.springframework.org/schema/util
+		   http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+	
+	<import resource="applicationContext-security.xml"/>
+
+	<!-- <context:component-scan base-package="com.eko.nerdeneyenir.restful" /> -->
+
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>/WEB-INF/application.properties</value>
+			</list>
+		</property>
+	</bean>		
+		
+<!--		
+	<jee:jndi-lookup id="myDataSource" jndi-name="java:comp/env/jdbc/ekber"
+					 resource-ref="true" lookup-on-startup="true" proxy-interface="javax.sql.DataSource">
+	</jee:jndi-lookup>
+-->		
+		
+	<bean id="myDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${database.driver}" />
+		<property name="url" value="${database.url}" />
+		<property name="username" value="${database.username}" />
+		<property name="password" value="${database.password}" />
+	</bean>	
+	
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource" ref="myDataSource" />
+		
+		<property name="mappingResources">
+			<list>
+				<value>Food.hbm.xml</value>
+				<value>FoodPopularity.hbm.xml</value>
+				<value>FoodImage.hbm.xml</value>
+				<value>FoodCategory.hbm.xml</value>
+				<value>Restaurant.hbm.xml</value>
+				<value>RestaurantAddress.hbm.xml</value>
+				<value>EkoUtil.hbm.xml</value>
+			</list>
+		</property>
+    	
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">false</prop>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+		        <prop key="hibernate.connection.charSet">UTF-8</prop>
+		        <prop key="hibernate.connection.characterEncoding">UTF-8</prop>
+		        <prop key="hibernate.connection.useUnicode">true</prop>
+				<prop key="hibernate.cache.use_second_level_cache">true</prop>
+				<prop key="hibernate.cache.region.factory_class">net.sf.ehcache.hibernate.EhCacheRegionFactory</prop>
+				<prop key="hibernate.cache.use_query_cache">true</prop>
+			</props>
+		</property>
+	</bean>
+	
+
+	<bean id="myTxManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+	    <property name="transactionManager" ref="myTxManager"/>
+	</bean>
+
+	<tx:advice id="myTxAdvice" transaction-manager="myTxManager">
+	  <tx:attributes>
+	    <tx:method name="*" propagation="REQUIRED" rollback-for="Exception" />
+	  </tx:attributes>
+	</tx:advice>
+
+
+	<bean id="genericDao" class="org.ekber.dao.GenericDaoHibernate" abstract="true">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+
+	<bean id="foodDao" class="com.eko.nerdeneyenir.dao.FoodDaoImpl" parent="genericDao"/>
+	
+	<bean id="foodService" class="com.eko.nerdeneyenir.service.FoodServiceImpl">
+		<property name="foodDao" ref="foodDao" />
+	</bean>
+	
+	
+	<bean id="foodImageDao" class="com.eko.nerdeneyenir.dao.FoodImageDaoImpl" parent="genericDao"/>
+	
+	<bean id="foodImageService" class="com.eko.nerdeneyenir.service.FoodImageServiceImpl">
+		<property name="foodImageDao" ref="foodImageDao" />
+	</bean>
+	
+	
+	<bean id="foodCategoryDao" class="com.eko.nerdeneyenir.dao.FoodCategoryDaoImpl" parent="genericDao"/>
+	
+	<bean id="foodCategoryService" class="com.eko.nerdeneyenir.service.FoodCategoryServiceImpl">
+		<property name="foodCategoryDao" ref="foodCategoryDao" />
+	</bean>
+	
+	
+	<bean id="restaurantDao" class="com.eko.nerdeneyenir.dao.RestaurantDaoImpl" parent="genericDao"/>
+	
+	<bean id="restaurantService" class="com.eko.nerdeneyenir.service.RestaurantServiceImpl">
+		<property name="restaurantDao" ref="restaurantDao" />
+	</bean>
+	
+	
+	<bean id="restaurantAddressDao" class="com.eko.nerdeneyenir.dao.RestaurantAddressDaoImpl" parent="genericDao"/>
+    <bean id="foodPopularityDao" class="com.eko.nerdeneyenir.dao.FoodPopularityDaoImpl" parent="genericDao"/>
+    
+	<!-- JSF Bean Tanimlari -->
+	
+	<bean id="foodBean" class="com.eko.nerdeneyenir.bean.FoodBean" init-method="init" scope="session">
+		<property name="foodService" ref="foodService" />
+		<property name="foodImageService" ref="foodImageService" />
+		<property name="foodCategoryService" ref="foodCategoryService" />
+		<property name="restaurantService" ref="restaurantService" />
+	</bean>
+
+</beans>

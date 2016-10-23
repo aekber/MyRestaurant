@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+ 
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:a4j="http://richfaces.org/a4j"
+	  xmlns:rich="http://richfaces.org/rich"
+	  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	  xmlns:eko="http://www.javalog.net/jsf/util"
+	  xmlns:pretty="http://ocpsoft.com/prettyfaces">
+
+	<ui:composition template="../WEB-INF/admin/atemplate.xhtml">
+
+		<ui:define name="title">Manage Blog | Amanda Admin Template</ui:define>
+		
+		<ui:define name="scripts">
+	    	
+			<script type="text/javascript" src="#{request.contextPath}/adminci/js/plugins/jquery-1.7.min.js"></script>
+			<script type="text/javascript" src="#{request.contextPath}/adminci/js/plugins/jquery-ui-1.8.16.custom.min.js"></script>
+			<script type="text/javascript" src="#{request.contextPath}/adminci/js/plugins/jquery.cookie.js"></script>
+			<script type="text/javascript" src="#{request.contextPath}/adminci/js/plugins/jquery.alerts.js"></script>
+			<script type="text/javascript" src="#{request.contextPath}/adminci/js/plugins/jquery.uniform.min.js"></script>
+			<script type="text/javascript" src="#{request.contextPath}/adminci/js/custom/general.js"></script>
+			<script type="text/javascript" src="#{request.contextPath}/adminci/js/custom/blog.js"></script>
+	    
+	    </ui:define>
+		
+		<ui:define name="leftmenu">
+	
+		    <div class="vernav">
+		    	<ul>
+		    		<li><a href="#{request.contextPath}/faces/zekber/javalog/administration/manageblog/gallery/">Gallery</a></li>
+		        	<li class="current"><a href="/faces/zekber/javalog/administration/manageblog/" class="editor">Posts</a></li>
+		            <li><a href="#{request.contextPath}/faces/zekber/javalog/administration/manageblog/newpost/">Create New Post</a></li>
+		            <li><a href="#{request.contextPath}/faces/zekber/javalog/administration/manageblog/comments/">Comments</a></li>
+		            <li><a href="#{request.contextPath}/faces/zekber/javalog/administration/manageblog/articles/">Articles</a></li>
+		            <li><a href="#{request.contextPath}/faces/zekber/javalog/administration/manageblog/subcategories/">Subcategories</a></li>
+		            <li><a href="#{request.contextPath}/faces/zekber/javalog/administration/manageblog/categories/">Categories</a></li>
+		        </ul>
+		        <a class="togglemenu"></a>
+		    </div><!--leftmenu-->
+	    
+	    </ui:define>
+		
+		<ui:define name="content">
+		
+			<div class="pageheader">
+	            <h1 class="pagetitle">Manage Blog</h1>
+	            <span class="pagedesc">The content below are loaded using ajax</span>
+	            
+	            <ul class="hornav blogmenu">
+	                <li class="current"><a href="ajax/blog/allposts.jsf">All Post (5)</a></li>
+	                <li><a href="ajax/blog/published.jsf">Published (5)</a></li>
+	                <li><a href="ajax/blog/draft.jsf">Draft (3)</a></li>
+	                <li><a href="ajax/blog/trash.jsf">Trash (1)</a></li>
+	            </ul>
+	        </div><!--pageheader-->
+	        
+	        <div class="contentwrapper" id="contentwrapper">
+				<div class="contenttitle">
+					<h4>All Posts</h4>
+				</div><!--contenttitle-->	
+				<table cellspacing="0" cellpadding="0" border="0" class="stdtable blogtable">
+					<colgroup>
+						<col class="con0" />
+						<col class="con1" />
+						<col class="con0" />
+						<col class="con1" />
+						<col class="con0" />
+						<col class="con1" />
+					</colgroup>
+					<thead>
+					<tr>
+						<th width="20" class="head1 aligncenter">
+							<div class="checker" id="uniform-undefined">
+								<span>
+									<input type="checkbox" class="checkall" name="checkall" style="opacity: 0;" />
+								</span>
+							</div>
+						</th>
+						<th class="head0">ID</th>
+						<th class="head1">Article Name</th>
+						<th class="head0">Subcategory</th>
+						<th class="head1">Category</th>
+						<th class="head0">Insert Date</th>
+						<th class="head1">Popularity</th>
+						<th class="head0">Comments Active?</th>
+						<th class="head0">Comment Count</th>
+						<th class="head1"></th>
+					</tr>
+					</thead>
+					<tbody>
+						<a4j:repeat  var="article" value="#{foodBean.allArticles.setToList}" rowKeyVar="say">
+							<tr>
+								<td class="aligncenter">
+									<div class="checker" id="uniform-undefined">
+										<span>
+											<input type="checkbox" name="" style="opacity: 0;" />
+										</span>
+									</div>
+								</td>
+								<td class="con0">#{article.articleid}</td>
+								<td class="con1">
+									<pretty:link mappingId="gonder" styleClass="title">
+										<f:param value="#{article.articleid}" />
+										<f:param value="#{article.articleTag}" />
+										#{article.articleTag}
+									</pretty:link>
+								</td>
+								<td class="con0">#{article.subcategory.subCategoryName}</td>
+								<td class="con1">#{article.subcategory.category.articlecategory}</td>
+								<td class="con0">				                
+									<h:outputText styleClass="con1" value="#{article.insertdate}">
+					                	<f:convertDateTime dateStyle="medium" timeZone="Turkey" type="both" />
+					                </h:outputText>
+					            </td>
+								<td class="con0">#{article.popularity}</td>
+								<td class="con1">#{article.commentsActive ? 'Evet' : 'Hayır'}</td>
+								<td class="con0">#{article.comments.size()}</td>
+								<td class="actions aligncenter">
+									<a href="editblog.html">Edit</a> 
+									<a class="delete" href="">Delete</a>
+								</td>
+							</tr>
+						</a4j:repeat>
+					</tbody>
+				</table>
+
+			</div><!-- contentwrapper -->
+	        	
+		</ui:define>
+	
+	</ui:composition>
+	
+</html>
